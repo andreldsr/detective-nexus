@@ -3,8 +3,8 @@ import type { CaseData } from './types';
 export const caseData: CaseData = {
   title: 'The Case of the Stolen Sapphire',
   description: 'The famous "Azure Star" sapphire has been stolen from Lady Beatrice\'s private collection. The thief was swift, leaving only a few subtle clues behind. Interrogate the suspects and piece together the evidence to find the culprit.',
-  difficulty: 'Easy',
-  startingClueIds: ['note'],
+  difficulty: 'Medium',
+  startingClueIds: ['note', 'argument'],
   characters: [
     {
       id: 'beatrice',
@@ -67,6 +67,35 @@ export const caseData: CaseData = {
         }
       ],
     },
+    {
+      id: 'vincent',
+      name: 'Vincent "The Vulture" Costello',
+      image: 'https://placehold.co/400x400.png',
+      imageHint: 'scheming art dealer portrait',
+      statement: 'The Azure Star? A beautiful piece, but hardly my most recent acquisition. I was at my own gallery opening all evening, surrounded by the city\'s elite. I have dozens of witnesses.',
+      statementTimestamp: 'October 27, 1948, 10:15 AM',
+      dialogueTree: [
+        { clueId: 'note', response: 'Amateurish. This doesn\'t have the finesse of a professional job. It\'s almost insulting to be considered a suspect.' },
+        { clueId: 'debt', response: 'Debts are for the desperate. My affairs are quite in order, I assure you.'},
+        { clueId: 'argument', response: 'Beatrice and I are rivals, not enemies. Our competition is professional, never personal.'},
+        { clueId: 'footprint', response: 'I wouldn\'t dream of setting my Italian leather shoes in a garden. Preposterous.'},
+        { clueId: 'gallery_alibi', response: 'Ah, so you\'ve seen the papers. Yes, the opening was a smashing success. I couldn\'t possibly have been at the manor.'}
+      ],
+    },
+    {
+      id: 'eleanor',
+      name: 'Eleanor Vance',
+      image: 'https://placehold.co/400x400.png',
+      imageHint: 'nervous young woman portrait',
+      statement: 'Aunt Beatrice\'s sapphire? Oh, how awful! I... I was at the cinema all night. I even kept the ticket stub. I haven\'t visited the manor in ages. We had a... falling out.',
+      statementTimestamp: 'October 27, 1948, 11:30 AM',
+      dialogueTree: [
+        { clueId: 'note', response: 'Goodness, how frightening for her. I hope the police find the culprit.'},
+        { clueId: 'debt', response: 'A lady has her secrets, doesn\'t she? My finances are my own concern.'},
+        { clueId: 'argument', response: 'My aunt and I... we see things differently. That\'s all.'},
+        { clueId: 'torn_fabric', response: 'That piece of fabric? It... it looks familiar. But it could be from any dress. It proves nothing!', unlocksClueId: 'gallery_alibi'}
+      ],
+    }
   ],
   clues: [
     {
@@ -104,5 +133,19 @@ export const caseData: CaseData = {
       image: 'https://placehold.co/600x400.png',
       imageHint: 'handcuffs document',
     },
+     {
+      id: 'torn_fabric',
+      title: 'Torn Piece of Fabric',
+      description: 'A small scrap of expensive-looking silk was found snagged on a rose bush near the study window.',
+      image: 'https://placehold.co/600x400.png',
+      imageHint: 'torn silk fabric',
+    },
+    {
+      id: 'gallery_alibi',
+      title: 'Gallery Opening Alibi',
+      description: 'A newspaper article confirms Vincent Costello was hosting a well-attended gallery opening on the night of the theft.',
+      image: 'https://placehold.co/600x400.png',
+      imageHint: 'newspaper article',
+    }
   ],
 };
