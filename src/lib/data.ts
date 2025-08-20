@@ -4,7 +4,7 @@ export const caseData: CaseData = {
   title: 'The Case of the Stolen Sapphire',
   description: 'The famous "Azure Star" sapphire has been stolen from Lady Beatrice\'s private collection. The thief was swift, leaving only a few subtle clues behind. Interrogate the suspects and piece together the evidence to find the culprit.',
   difficulty: 'Medium',
-  startingClueIds: ['note', 'argument'],
+  startingClueIds: ['note', 'argument', 'journal_entry'],
   characters: [
     {
       id: 'beatrice',
@@ -21,6 +21,10 @@ export const caseData: CaseData = {
         {
           clueId: 'argument',
           response: 'Clara and I? We argue occasionally, what of it? She was upset about her wages. It has nothing to do with this terrible crime.',
+        },
+        {
+          clueId: 'journal_entry',
+          response: 'My journal? How did you get that? Yes, I was concerned about Arthur, but I never suspected he would steal from me. I feel so betrayed.',
         }
       ],
     },
@@ -146,6 +150,13 @@ export const caseData: CaseData = {
       description: 'A newspaper article confirms Vincent Costello was hosting a well-attended gallery opening on the night of the theft.',
       image: 'https://placehold.co/600x400.png',
       imageHint: 'newspaper article',
+    },
+    {
+      id: 'journal_entry',
+      title: 'Lady Beatrice\'s Journal',
+      description: 'An entry from Lady Beatrice\'s journal, dated a week before the theft: "I fear Arthur is becoming desperate. His creditors have been calling the house. I must speak with him, but I do dread confrontation so."',
+      image: 'https://placehold.co/600x800.png',
+      imageHint: 'handwritten journal page',
     }
   ],
 };
