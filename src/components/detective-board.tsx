@@ -92,7 +92,12 @@ export function DetectiveBoard({ initialCaseData }: DetectiveBoardProps) {
           />
         </div>
         <div className="lg:col-span-1">
-          <CluesPanel allClues={caseData.clues} unlockedClueIds={unlockedClues} />
+          <CluesPanel
+            allClues={caseData.clues}
+            unlockedClueIds={unlockedClues}
+            selectedClueId={selectedClueId}
+            onSelectClue={setSelectedClueId}
+          />
         </div>
       </div>
       {dialogueResult && (
