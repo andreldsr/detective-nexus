@@ -18,7 +18,7 @@ export default function Home() {
           <p className="font-body text-lg">{caseData.description}</p>
         </CardContent>
       </Card>
-      <DetectiveBoard caseData={caseData} />
+      <DetectiveBoard initialCaseData={caseData} />
     </main>
   );
 }

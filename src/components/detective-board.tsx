@@ -7,12 +7,17 @@ import { CluesPanel } from "./clues-panel";
 import { ConfrontationPanel } from "./confrontation-panel";
 import { DialogueModal } from "./dialogue-modal";
 import { useToast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button";
+import { generateImagesForCase } from "@/ai/flows/image-generation-flow";
+import { Loader } from "lucide-react";
 
 type DetectiveBoardProps = {
-  caseData: CaseData;
+  initialCaseData: CaseData;
 };
 
-export function DetectiveBoard({ caseData }: DetectiveBoardProps) {
+export function DetectiveBoard({ initialCaseData }: DetectiveBoardProps) {
+  const [caseData, setCaseData] = useState(initialCaseData);
+  const [isGeneratingImages, setIsGeneratingImages] = useState(false);
   const [unlockedClues, setUnlockedClues] = useState(new Set<string>(caseData.startingClueIds));
   const [selectedCharacterId, setSelectedCharacterId] = useState<string | null>(null);
   const [selectedClueId, setSelectedClueId] = useState<string | null>(null);
@@ -23,6 +28,27 @@ export function DetectiveBoard({ caseData }: DetectiveBoardProps) {
   const unlockedCluesList = useMemo(() => {
     return caseData.clues.filter(clue => unlockedClues.has(clue.id));
   }, [unlockedClues, caseData.clues]);
+
+  const handleGenerateImages = async () => {
+    setIsGeneratingImages(true);
+    try {
+      const updatedCaseData = await generateImagesForCase(caseData);
+      setCaseData(updatedCaseData);
+      toast({
+        title: "Images Generated",
+        description: "The suspect and clue images have been updated.",
+      });
+    } catch (error) {
+      console.error("Failed to generate images:", error);
+      toast({
+        variant: "destructive",
+        title: "Image Generation Failed",
+        description: "Could not generate new images. Please try again later.",
+      });
+    } finally {
+      setIsGeneratingImages(false);
+    }
+  };
 
   const handleConfrontation = () => {
     if (!selectedCharacterId || !selectedClueId) {
@@ -71,6 +97,18 @@ export function DetectiveBoard({ caseData }: DetectiveBoardProps) {
 
   return (
     <>
+      <div className="flex justify-center mb-6">
+        <Button onClick={handleGenerateImages} disabled={isGeneratingImages}>
+          {isGeneratingImages ? (
+            <>
+              <Loader className="mr-2 h-4 w-4 animate-spin" />
+              Generating Images...
+            </>
+          ) : (
+            "Generate Images"
+          )}
+        </Button>
+      </div>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
         <div className="lg:col-span-1">
           <SuspectsPanel
