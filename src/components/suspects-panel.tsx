@@ -14,13 +14,6 @@ type SuspectsPanelProps = {
 };
 
 export function SuspectsPanel({ characters, selectedCharacterId, onSelectCharacter }: SuspectsPanelProps) {
-  // Find the initial statement for each character, which we assume is tied to the first clue.
-  const getInitialStatement = (character: Character) => {
-    // A character might not have a dialogue for the initial clue.
-    const initialDialogue = character.dialogueTree.find(d => d.clueId === 'note');
-    return initialDialogue?.response ?? "I have nothing to say.";
-  };
-
   return (
     <Card className="h-full">
       <CardHeader className="flex flex-row items-center gap-2">
@@ -52,11 +45,11 @@ export function SuspectsPanel({ characters, selectedCharacterId, onSelectCharact
               </div>
                <AccordionItem value={character.id} className="border-b-0 mt-2">
                   <AccordionTrigger className="text-sm text-muted-foreground hover:no-underline [&[data-state=open]>svg]:rotate-180">
-                    View Statement
+                    View Official Statement
                     <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-200" />
                   </AccordionTrigger>
                   <AccordionContent className="pt-2 text-base">
-                    &quot;{getInitialStatement(character)}&quot;
+                    <p className="font-body italic text-muted-foreground/90">{character.statement}</p>
                   </AccordionContent>
                 </AccordionItem>
             </Card>

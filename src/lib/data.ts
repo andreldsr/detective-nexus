@@ -11,6 +11,7 @@ export const caseData: CaseData = {
       name: 'Lady Beatrice',
       image: 'https://placehold.co/400x400.png',
       imageHint: 'aristocratic woman portrait',
+      statement: 'I am the owner of the stolen "Azure Star" sapphire. I discovered it was missing this evening from my private study. The last time I saw it was yesterday afternoon. I am distraught and have no idea who would do such a thing. The note is gibberish to me.',
       dialogueTree: [
         {
           clueId: 'note',
@@ -27,6 +28,7 @@ export const caseData: CaseData = {
       name: 'Arthur the Butler',
       image: 'https://placehold.co/400x400.png',
       imageHint: 'stern butler portrait',
+      statement: 'I have served Lady Beatrice for fifteen years. On the evening of the theft, I was performing my usual duties, which included polishing the silver in the west wing of the manor. I remained there for the entire evening and saw nothing unusual.',
       dialogueTree: [
         {
           clueId: 'note',
@@ -49,6 +51,7 @@ export const caseData: CaseData = {
       name: 'Clara the Maid',
       image: 'https://placehold.co/400x400.png',
       imageHint: 'young maid portrait',
+      statement: 'I am a maid in the employment of Lady Beatrice. I spent the evening cleaning the guest quarters on the second floor. I did not enter the study where the sapphire was kept. I know nothing about the theft.',
       dialogueTree: [
         {
           clueId: 'note',

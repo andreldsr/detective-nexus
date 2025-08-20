@@ -21,6 +21,7 @@ export const CharacterSchema = z.object({
   name: z.string(),
   image: z.string().url(),
   imageHint: z.string(),
+  statement: z.string(),
   dialogueTree: z.array(DialogueSchema),
 });
 export type Character = z.infer<typeof CharacterSchema>;
