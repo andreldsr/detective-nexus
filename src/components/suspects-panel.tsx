@@ -63,8 +63,23 @@ export function SuspectsPanel({ characters, selectedCharacterId, onSelectCharact
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
-                    <DialogTitle className="font-headline text-2xl text-primary">Official Statement: {character.name}</DialogTitle>
-                    <DialogDescription as="div" className="font-body text-base text-foreground pt-4">
+                    <div className="flex flex-col sm:flex-row items-start gap-4">
+                      <Image
+                        src={character.image}
+                        alt={`Portrait of ${character.name}`}
+                        width={100}
+                        height={100}
+                        className="rounded-md border-2 border-primary/50"
+                        data-ai-hint={character.imageHint}
+                      />
+                      <div className="flex-1">
+                        <DialogTitle className="font-headline text-2xl text-primary mb-1">Official Statement: {character.name}</DialogTitle>
+                        {character.statementTimestamp && (
+                          <p className="text-sm text-muted-foreground">{`Taken: ${character.statementTimestamp}`}</p>
+                        )}
+                      </div>
+                    </div>
+                     <DialogDescription as="div" className="font-body text-base text-foreground pt-4">
                       <p className="italic">&quot;{character.statement}&quot;</p>
                     </DialogDescription>
                   </DialogHeader>
