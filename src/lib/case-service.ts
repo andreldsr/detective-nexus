@@ -1,17 +1,17 @@
 
 'use server';
 
-import { doc, getDoc } from 'firebase/firestore';
+import { getFirestore } from 'firebase-admin/firestore';
 import { db } from './firebase-admin';
 import type { CaseData } from './types';
 import { CaseDataSchema } from './types';
 
 export async function getCase(caseId: string): Promise<{ caseData: CaseData | null; error: string | null }> {
   try {
-    const caseDocRef = doc(db, 'cases', caseId);
-    const caseDocSnap = await getDoc(caseDocRef);
+    const caseDocRef = db.collection('cases').doc(caseId);
+    const caseDocSnap = await caseDocRef.get();
 
-    if (!caseDocSnap.exists()) {
+    if (!caseDocSnap.exists) {
       console.error('No such document!');
       return { caseData: null, error: `Case with id "${caseId}" not found.` };
     }
