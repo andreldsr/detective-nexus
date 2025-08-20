@@ -46,13 +46,13 @@ export function CluesPanel({ allClues, unlockedClueIds, selectedClueId, onSelect
                     <CardContent className="p-0 space-y-4">
                       <Dialog>
                         <DialogTrigger asChild>
-                          <div className="relative cursor-pointer group">
+                          <div className="relative cursor-pointer group bg-muted rounded-md">
                             <Image
                               src={clue.image}
                               alt={`Evidence: ${clue.title}`}
                               width={600}
                               height={400}
-                              className="rounded-md w-full object-cover transition-all group-hover:brightness-75"
+                              className="rounded-md w-full h-48 object-contain transition-all group-hover:brightness-75"
                               data-ai-hint={clue.imageHint}
                               onClick={(e) => e.stopPropagation()} // Prevent card click from firing
                             />
@@ -61,7 +61,7 @@ export function CluesPanel({ allClues, unlockedClueIds, selectedClueId, onSelect
                             </div>
                           </div>
                         </DialogTrigger>
-                        <DialogContent className="max-w-3xl">
+                        <DialogContent className="max-w-5xl">
                            <Image
                               src={clue.image}
                               alt={`Evidence: ${clue.title}`}
