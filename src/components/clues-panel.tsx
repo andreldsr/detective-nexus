@@ -1,3 +1,4 @@
+
 "use client";
 
 import type { Clue } from "@/lib/types";
@@ -24,8 +25,8 @@ export function CluesPanel({ allClues, unlockedClueIds, selectedClueId, onSelect
         <FileScan className="w-6 h-6 text-primary" />
         <CardTitle className="font-headline text-2xl">Unlocked Clues</CardTitle>
       </CardHeader>
-      <CardContent className="flex-grow">
-        <ScrollArea className="h-full pr-4">
+      <CardContent className="flex-grow overflow-hidden">
+        <ScrollArea className="h-[60vh] pr-4">
           <div className="space-y-4">
             {unlockedClues.length > 0 ? (
               unlockedClues.map((clue) => (

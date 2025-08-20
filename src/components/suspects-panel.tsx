@@ -1,3 +1,4 @@
+
 "use client";
 
 import type { Character } from "@/lib/types";
@@ -31,8 +32,8 @@ export function SuspectsPanel({ characters, selectedCharacterId, onSelectCharact
         <UsersRound className="w-6 h-6 text-primary" />
         <CardTitle className="font-headline text-2xl">Suspects</CardTitle>
       </CardHeader>
-      <CardContent className="flex-grow">
-        <ScrollArea className="h-full pr-4">
+      <CardContent className="flex-grow overflow-hidden">
+        <ScrollArea className="h-[60vh] pr-4">
           <div className="space-y-2">
             {characters.map((character) => (
               <Dialog key={character.id}>
