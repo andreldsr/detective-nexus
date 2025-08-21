@@ -4,10 +4,11 @@
 import { 
   createUserWithEmailAndPassword, 
   signInWithEmailAndPassword,
+  signInWithPopup,
   signOut,
   updateProfile
 } from "firebase/auth";
-import { auth } from "./firebase";
+import { auth, googleProvider } from "./firebase";
 
 export async function signUp(email: string, pass: string, displayName: string) {
   try {
@@ -47,6 +48,27 @@ export async function signIn(email: string, pass: string) {
     }
   }
 }
+
+export async function signInWithGoogle() {
+    try {
+        const userCredential = await signInWithPopup(auth, googleProvider);
+        return userCredential.user;
+    } catch(error: any) {
+        // Handle specific popup errors
+        switch (error.code) {
+            case 'auth/popup-closed-by-user':
+              // This is a common case, we can choose to do nothing or log it
+              console.log('Google sign-in popup closed by user.');
+              return null; // Don't throw an error, just return null
+            case 'auth/account-exists-with-different-credential':
+              throw new Error('An account already exists with the same email address but different sign-in credentials.');
+            default:
+              console.error("Error during Google sign-in: ", error);
+              throw new Error("An unknown error occurred during Google sign-in.");
+        }
+    }
+}
+
 
 export async function signOutUser() {
     try {
