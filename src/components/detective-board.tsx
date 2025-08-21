@@ -25,7 +25,7 @@ export function DetectiveBoard({ caseId, initialCaseData, initialUnlockedClueIds
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { toast } = useToast();
   
-  // Ref to track if this is the initial render
+  // Ref to track if this is the initial render to prevent saving on mount
   const isInitialMount = useRef(true);
 
   const unlockedCluesList = useMemo(() => {
@@ -73,15 +73,14 @@ export function DetectiveBoard({ caseId, initialCaseData, initialUnlockedClueIds
   // Save progress to Firestore whenever unlockedClues changes
   useEffect(() => {
     // We want to skip saving on the very first render,
-    // as we are just setting the initial state.
+    // as we are just setting the initial state from props.
     if (isInitialMount.current) {
       isInitialMount.current = false;
       return;
     }
     
-    // Only save if there's progress to save
+    // Only save if there are clues to save.
     if (unlockedClues.size > 0) {
-      console.log("Saving progress to Firestore. Unlocked clues:", Array.from(unlockedClues));
       updateCaseProgress(caseId, Array.from(unlockedClues)).catch(error => {
         console.error("Failed to save progress:", error);
         toast({

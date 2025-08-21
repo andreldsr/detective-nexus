@@ -58,7 +58,7 @@ export async function updateCaseProgress(caseId: string, unlockedClueIds: string
         console.error("User not logged in, cannot update progress.");
         return;
     }
-    
+    console.log(userId);
     const userRef = db.collection('users').doc(userId);
 
     const progressToSave = {
