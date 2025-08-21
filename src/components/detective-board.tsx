@@ -27,9 +27,7 @@ export function DetectiveBoard({ caseId, initialCaseData, initialUnlockedClueIds
   const { toast } = useToast();
   const isInitialMount = useRef(true);
 
-  const { user, loading} = useUser();
-
-
+  const { user, loading } = useUser();
 
   const unlockedCluesList = useMemo(() => {
     return caseData.clues.filter(clue => unlockedClues.has(clue.id));
@@ -74,13 +72,20 @@ export function DetectiveBoard({ caseId, initialCaseData, initialUnlockedClueIds
   };
   
   useEffect(() => {
+    // Don't save on initial mount
     if (isInitialMount.current) {
       isInitialMount.current = false;
       return;
     }
+    
+    // Don't save if there's no user logged in
+    if (!user) {
+      console.log('No user, skipping progress save.');
+      return;
+    }
   
-    console.log('Detected change in unlockedClues, attempting to save progress...');
-    updateCaseProgress(caseId, Array.from(unlockedClues), user?.uid ?? "")
+    console.log('Detected change in unlockedClues, attempting to save progress for user:', user.uid);
+    updateCaseProgress(caseId, Array.from(unlockedClues), user.uid)
     .then(() => {
       console.log("Progress saved successfully!");
       toast({
@@ -96,7 +101,7 @@ export function DetectiveBoard({ caseId, initialCaseData, initialUnlockedClueIds
           description: "Could not save your progress to the server."
       });
     });
-  }, [unlockedClues, caseId, toast]);
+  }, [unlockedClues, caseId, user, toast]);
 
 
   return (

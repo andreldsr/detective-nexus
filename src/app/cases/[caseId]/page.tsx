@@ -13,7 +13,11 @@ import { getCurrentUser } from '@/lib/server-auth';
 export default async function CasePage({ params }: { params: { caseId: string } }) {
   const { caseData, error } = await getCase(params.caseId);
   const user = await getCurrentUser();
-  const savedProgress = await getCaseProgress(params.caseId, user?.uid ?? "");
+  
+  let savedProgress: string[] | null = null;
+  if (user) {
+    savedProgress = await getCaseProgress(params.caseId, user.uid);
+  }
 
   if (error || !caseData) {
     return (
