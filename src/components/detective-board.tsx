@@ -9,6 +9,7 @@ import { ConfrontationPanel } from "./confrontation-panel";
 import { DialogueModal } from "./dialogue-modal";
 import { useToast } from "@/hooks/use-toast";
 import { updateCaseProgress } from "@/lib/user-service";
+import { useUser } from "@/lib/auth-service";
 
 type DetectiveBoardProps = {
   caseId: string;
@@ -25,6 +26,10 @@ export function DetectiveBoard({ caseId, initialCaseData, initialUnlockedClueIds
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { toast } = useToast();
   const isInitialMount = useRef(true);
+
+  const { user, loading} = useUser();
+
+
 
   const unlockedCluesList = useMemo(() => {
     return caseData.clues.filter(clue => unlockedClues.has(clue.id));
@@ -75,7 +80,15 @@ export function DetectiveBoard({ caseId, initialCaseData, initialUnlockedClueIds
     }
   
     console.log('Detected change in unlockedClues, attempting to save progress...');
-    updateCaseProgress(caseId, Array.from(unlockedClues)).catch(error => {
+    updateCaseProgress(caseId, Array.from(unlockedClues), user?.uid ?? "")
+    .then(() => {
+      console.log("Progress saved successfully!");
+      toast({
+        title: "Progress Saved!",
+        description: "Your progress has been saved to the server.",
+      });
+    })
+    .catch(error => {
       console.error("Failed to save progress:", error);
       toast({
           variant: "destructive",

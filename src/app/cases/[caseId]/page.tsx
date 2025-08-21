@@ -8,10 +8,12 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import { getCaseProgress } from '@/lib/user-service';
+import { getCurrentUser } from '@/lib/server-auth';
 
 export default async function CasePage({ params }: { params: { caseId: string } }) {
   const { caseData, error } = await getCase(params.caseId);
-  const savedProgress = await getCaseProgress(params.caseId);
+  const user = await getCurrentUser();
+  const savedProgress = await getCaseProgress(params.caseId, user?.uid ?? "");
 
   if (error || !caseData) {
     return (
