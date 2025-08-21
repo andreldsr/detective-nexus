@@ -19,12 +19,6 @@ const formSchema = z.object({
   name: z.string().optional(),
   email: z.string().email({ message: "Invalid email address." }),
   password: z.string().min(6, { message: "Password must be at least 6 characters." }),
-}).refine(data => {
-    // In signup mode, name is required.
-    // This assumes a way to know the mode, which we don't have inside the schema directly.
-    // We will handle this refinement logically before calling the auth service.
-    // For now, the schema makes it optional and we will enforce it in the component.
-    return true;
 });
 
 
