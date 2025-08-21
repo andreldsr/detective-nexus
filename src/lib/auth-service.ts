@@ -6,14 +6,32 @@ import {
   signInWithEmailAndPassword,
   signInWithPopup,
   signOut,
-  updateProfile
+  updateProfile,
+  type User
 } from "firebase/auth";
 import { auth, googleProvider } from "./firebase";
+
+async function setTokenCookie(user: User) {
+    const idToken = await user.getIdToken();
+    await fetch('/api/auth/session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ idToken }),
+    });
+}
+
+async function clearTokenCookie() {
+    await fetch('/api/auth/session', {
+        method: 'DELETE',
+    });
+}
+
 
 export async function signUp(email: string, pass: string, displayName: string) {
   try {
     const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
     await updateProfile(userCredential.user, { displayName });
+    await setTokenCookie(userCredential.user);
     return userCredential.user;
   } catch (error: any) {
     // Provide more specific error messages
@@ -33,6 +51,7 @@ export async function signUp(email: string, pass: string, displayName: string) {
 export async function signIn(email: string, pass: string) {
   try {
     const userCredential = await signInWithEmailAndPassword(auth, email, pass);
+    await setTokenCookie(userCredential.user);
     return userCredential.user;
   } catch (error: any) {
      // Provide more specific error messages
@@ -52,6 +71,9 @@ export async function signIn(email: string, pass: string) {
 export async function signInWithGoogle() {
     try {
         const userCredential = await signInWithPopup(auth, googleProvider);
+        if (userCredential.user) {
+          await setTokenCookie(userCredential.user);
+        }
         return userCredential.user;
     } catch(error: any) {
         // Handle specific popup errors
@@ -73,6 +95,7 @@ export async function signInWithGoogle() {
 export async function signOutUser() {
     try {
         await signOut(auth);
+        await clearTokenCookie();
     } catch(error: any) {
         console.error("Error signing out: ", error);
         throw new Error("Failed to sign out.");
