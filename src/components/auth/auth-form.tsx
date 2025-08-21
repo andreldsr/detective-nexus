@@ -15,12 +15,16 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Terminal } from "lucide-react";
 import { signUp, signIn } from "@/lib/auth-service";
 
-const formSchema = z.object({
-  name: z.string().optional(),
+const loginSchema = z.object({
   email: z.string().email({ message: "Invalid email address." }),
   password: z.string().min(6, { message: "Password must be at least 6 characters." }),
 });
 
+const signupSchema = z.object({
+    name: z.string().min(2, { message: "Name must be at least 2 characters." }),
+    email: z.string().email({ message: "Invalid email address." }),
+    password: z.string().min(6, { message: "Password must be at least 6 characters." }),
+});
 
 type AuthFormProps = {
   mode: "login" | "signup";
@@ -31,14 +35,10 @@ export function AuthForm({ mode }: AuthFormProps) {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Refine schema based on mode
-  const finalSchema = mode === 'signup' 
-    ? formSchema.extend({ name: z.string().min(2, { message: "Name must be at least 2 characters." })}) 
-    : formSchema;
+  const currentSchema = mode === 'signup' ? signupSchema : loginSchema;
 
-
-  const form = useForm<z.infer<typeof finalSchema>>({
-    resolver: zodResolver(finalSchema),
+  const form = useForm<z.infer<typeof currentSchema>>({
+    resolver: zodResolver(currentSchema),
     defaultValues: {
       email: "",
       password: "",
@@ -46,15 +46,16 @@ export function AuthForm({ mode }: AuthFormProps) {
     },
   });
 
-  async function onSubmit(values: z.infer<typeof finalSchema>) {
+  async function onSubmit(values: z.infer<typeof currentSchema>) {
     setIsLoading(true);
     setError(null);
     try {
       if (mode === "signup") {
-        // The schema for signup ensures `name` is a string.
-        await signUp(values.email, values.password, values.name as string);
+        const signupValues = values as z.infer<typeof signupSchema>;
+        await signUp(signupValues.email, signupValues.password, signupValues.name);
       } else {
-        await signIn(values.email, values.password);
+        const loginValues = values as z.infer<typeof loginSchema>;
+        await signIn(loginValues.email, loginValues.password);
       }
       router.push("/");
     } catch (err: any) {
