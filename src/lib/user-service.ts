@@ -1,3 +1,4 @@
+
 'use server';
 
 import { db } from './firebase-admin';
@@ -59,8 +60,15 @@ export async function updateCaseProgress(caseId: string, unlockedClueIds: string
     }
     
     const userRef = db.collection('users').doc(userId);
-    // Use dot notation to update a nested field
-    await userRef.update({
-        [`caseProgress.${caseId}.unlockedClueIds`]: unlockedClueIds
-    });
+
+    const progressToSave = {
+        caseProgress: {
+            [caseId]: {
+                unlockedClueIds: unlockedClueIds
+            }
+        }
+    };
+    
+    // Use set with merge: true to create the document/nested fields if they don't exist
+    await userRef.set(progressToSave, { merge: true });
 }
