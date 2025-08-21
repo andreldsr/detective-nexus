@@ -69,7 +69,6 @@ export function AuthForm({ mode }: AuthFormProps) {
         await signIn(loginValues.email, loginValues.password);
       }
       router.push("/");
-      router.refresh(); // Force a refresh to ensure middleware re-evaluates
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -81,11 +80,8 @@ export function AuthForm({ mode }: AuthFormProps) {
     setIsLoading(true);
     setError(null);
     try {
-        const user = await signInWithGoogle();
-        if(user) {
-            router.push("/");
-            router.refresh(); // Force a refresh to ensure middleware re-evaluates
-        }
+        await signInWithGoogle();
+        router.push("/");
     } catch (err: any) {
         setError(err.message);
     } finally {

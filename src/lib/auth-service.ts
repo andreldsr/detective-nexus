@@ -7,9 +7,11 @@ import {
   signInWithPopup,
   signOut,
   updateProfile,
-  type User
+  type User,
+  onAuthStateChanged
 } from "firebase/auth";
 import { auth, googleProvider } from "./firebase";
+import { useEffect, useState } from "react";
 
 async function setTokenCookie(user: User) {
     const idToken = await user.getIdToken();
@@ -52,6 +54,8 @@ export async function signIn(email: string, pass: string) {
   try {
     const userCredential = await signInWithEmailAndPassword(auth, email, pass);
     await setTokenCookie(userCredential.user);
+    // Add a small delay to allow cookie to be set before potential redirect
+    await new Promise(resolve => setTimeout(resolve, 100));
     return userCredential.user;
   } catch (error: any) {
      // Provide more specific error messages
@@ -73,6 +77,8 @@ export async function signInWithGoogle() {
         const userCredential = await signInWithPopup(auth, googleProvider);
         if (userCredential.user) {
           await setTokenCookie(userCredential.user);
+          // Add a small delay to allow cookie to be set before potential redirect
+          await new Promise(resolve => setTimeout(resolve, 100));
         }
         return userCredential.user;
     } catch(error: any) {
@@ -100,4 +106,21 @@ export async function signOutUser() {
         console.error("Error signing out: ", error);
         throw new Error("Failed to sign out.");
     }
+}
+
+
+export function useUser() {
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setUser(user);
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  return { user, loading };
 }
