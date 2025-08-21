@@ -2,7 +2,7 @@
 "use client";
 
 import type { CaseData } from "@/lib/types";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { SuspectsPanel } from "./suspects-panel";
 import { CluesPanel } from "./clues-panel";
 import { ConfrontationPanel } from "./confrontation-panel";
@@ -24,6 +24,7 @@ export function DetectiveBoard({ caseId, initialCaseData, initialUnlockedClueIds
   const [dialogueResult, setDialogueResult] = useState<{ characterName: string; response: string; } | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { toast } = useToast();
+  const isInitialMount = useRef(true);
 
   const unlockedCluesList = useMemo(() => {
     return caseData.clues.filter(clue => unlockedClues.has(clue.id));
@@ -67,23 +68,22 @@ export function DetectiveBoard({ caseId, initialCaseData, initialUnlockedClueIds
     }
   };
   
-  // Compare initial and current unlocked clues to decide whether to save.
-  const initialCluesJson = JSON.stringify(initialUnlockedClueIds.sort());
-  const currentCluesJson = JSON.stringify(Array.from(unlockedClues).sort());
-  
   useEffect(() => {
-    // Only save if the clues have actually changed from what was loaded initially.
-    if (initialCluesJson !== currentCluesJson) {
-      updateCaseProgress(caseId, Array.from(unlockedClues)).catch(error => {
-        console.error("Failed to save progress:", error);
-        toast({
-            variant: "destructive",
-            title: "Save Error",
-            description: "Could not save your progress to the server."
-        });
-      });
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
     }
-  }, [caseId, unlockedClues, initialCluesJson, currentCluesJson, toast]);
+  
+    console.log('Detected change in unlockedClues, attempting to save progress...');
+    updateCaseProgress(caseId, Array.from(unlockedClues)).catch(error => {
+      console.error("Failed to save progress:", error);
+      toast({
+          variant: "destructive",
+          title: "Save Error",
+          description: "Could not save your progress to the server."
+      });
+    });
+  }, [unlockedClues, caseId, toast]);
 
 
   return (
