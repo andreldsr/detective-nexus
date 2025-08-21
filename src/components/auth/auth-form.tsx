@@ -16,9 +16,17 @@ import { Terminal } from "lucide-react";
 import { signUp, signIn } from "@/lib/auth-service";
 
 const formSchema = z.object({
+  name: z.string().optional(),
   email: z.string().email({ message: "Invalid email address." }),
   password: z.string().min(6, { message: "Password must be at least 6 characters." }),
+}).refine(data => {
+    // In signup mode, name is required.
+    // This assumes a way to know the mode, which we don't have inside the schema directly.
+    // We will handle this refinement logically before calling the auth service.
+    // For now, the schema makes it optional and we will enforce it in the component.
+    return true;
 });
+
 
 type AuthFormProps = {
   mode: "login" | "signup";
@@ -29,20 +37,28 @@ export function AuthForm({ mode }: AuthFormProps) {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  // Refine schema based on mode
+  const finalSchema = mode === 'signup' 
+    ? formSchema.extend({ name: z.string().min(2, { message: "Name must be at least 2 characters." })}) 
+    : formSchema;
+
+
+  const form = useForm<z.infer<typeof finalSchema>>({
+    resolver: zodResolver(finalSchema),
     defaultValues: {
       email: "",
       password: "",
+      ...(mode === 'signup' && { name: '' }),
     },
   });
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof finalSchema>) {
     setIsLoading(true);
     setError(null);
     try {
       if (mode === "signup") {
-        await signUp(values.email, values.password);
+        // The schema for signup ensures `name` is a string.
+        await signUp(values.email, values.password, values.name as string);
       } else {
         await signIn(values.email, values.password);
       }
@@ -73,6 +89,21 @@ export function AuthForm({ mode }: AuthFormProps) {
                 <AlertTitle>Authentication Failed</AlertTitle>
                 <AlertDescription>{error}</AlertDescription>
               </Alert>
+            )}
+            {mode === 'signup' && (
+                <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>Full Name</FormLabel>
+                    <FormControl>
+                        <Input placeholder="John Watson" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
             )}
             <FormField
               control={form.control}
