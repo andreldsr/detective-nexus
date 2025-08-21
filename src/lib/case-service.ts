@@ -30,3 +30,31 @@ export async function getCase(caseId: string): Promise<{ caseData: CaseData | nu
     return { caseData: null, error: e.message };
   }
 }
+
+
+export async function listCases(): Promise<{ cases: (Pick<CaseData, 'title' | 'description' | 'difficulty'> & { id: string })[] | null; error: string | null; }> {
+    try {
+        const casesCollection = db.collection('cases');
+        const snapshot = await casesCollection.get();
+
+        if (snapshot.empty) {
+            return { cases: [], error: null };
+        }
+
+        const cases = snapshot.docs.map(doc => {
+            const data = doc.data();
+            return {
+                id: doc.id,
+                title: data.title ?? 'Untitled Case',
+                description: data.description ?? 'No description.',
+                difficulty: data.difficulty ?? 'Unknown',
+            };
+        });
+
+        return { cases, error: null };
+
+    } catch (e: any) {
+        console.error("Error listing documents:", e);
+        return { cases: null, error: e.message };
+    }
+}
