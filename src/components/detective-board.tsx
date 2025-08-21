@@ -2,7 +2,7 @@
 "use client";
 
 import type { CaseData } from "@/lib/types";
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { SuspectsPanel } from "./suspects-panel";
 import { CluesPanel } from "./clues-panel";
 import { ConfrontationPanel } from "./confrontation-panel";
@@ -24,9 +24,6 @@ export function DetectiveBoard({ caseId, initialCaseData, initialUnlockedClueIds
   const [dialogueResult, setDialogueResult] = useState<{ characterName: string; response: string; } | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { toast } = useToast();
-  
-  // Ref to track if this is the initial render to prevent saving on mount
-  const isInitialMount = useRef(true);
 
   const unlockedCluesList = useMemo(() => {
     return caseData.clues.filter(clue => unlockedClues.has(clue.id));
@@ -70,17 +67,13 @@ export function DetectiveBoard({ caseId, initialCaseData, initialUnlockedClueIds
     }
   };
   
-  // Save progress to Firestore whenever unlockedClues changes
+  // Compare initial and current unlocked clues to decide whether to save.
+  const initialCluesJson = JSON.stringify(initialUnlockedClueIds.sort());
+  const currentCluesJson = JSON.stringify(Array.from(unlockedClues).sort());
+  
   useEffect(() => {
-    // We want to skip saving on the very first render,
-    // as we are just setting the initial state from props.
-    if (isInitialMount.current) {
-      isInitialMount.current = false;
-      return;
-    }
-    
-    // Only save if there are clues to save.
-    if (unlockedClues.size > 0) {
+    // Only save if the clues have actually changed from what was loaded initially.
+    if (initialCluesJson !== currentCluesJson) {
       updateCaseProgress(caseId, Array.from(unlockedClues)).catch(error => {
         console.error("Failed to save progress:", error);
         toast({
@@ -90,7 +83,8 @@ export function DetectiveBoard({ caseId, initialCaseData, initialUnlockedClueIds
         });
       });
     }
-  }, [unlockedClues, caseId, toast]);
+  }, [caseId, unlockedClues, initialCluesJson, currentCluesJson, toast]);
+
 
   return (
     <>
