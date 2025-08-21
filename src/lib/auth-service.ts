@@ -12,6 +12,7 @@ import {
 } from "firebase/auth";
 import { auth, googleProvider } from "./firebase";
 import { useEffect, useState } from "react";
+import { createDbUser, getDbUser } from "./user-service";
 
 async function setTokenCookie(user: User) {
     const idToken = await user.getIdToken();
@@ -33,6 +34,10 @@ export async function signUp(email: string, pass: string, displayName: string) {
   try {
     const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
     await updateProfile(userCredential.user, { displayName });
+    
+    // Create user document in Firestore
+    await createDbUser(userCredential.user.uid, displayName, email);
+    
     await setTokenCookie(userCredential.user);
     return userCredential.user;
   } catch (error: any) {
@@ -54,8 +59,6 @@ export async function signIn(email: string, pass: string) {
   try {
     const userCredential = await signInWithEmailAndPassword(auth, email, pass);
     await setTokenCookie(userCredential.user);
-    // Add a small delay to allow cookie to be set before potential redirect
-    await new Promise(resolve => setTimeout(resolve, 100));
     return userCredential.user;
   } catch (error: any) {
      // Provide more specific error messages
@@ -75,19 +78,23 @@ export async function signIn(email: string, pass: string) {
 export async function signInWithGoogle() {
     try {
         const userCredential = await signInWithPopup(auth, googleProvider);
-        if (userCredential.user) {
-          await setTokenCookie(userCredential.user);
-          // Add a small delay to allow cookie to be set before potential redirect
-          await new Promise(resolve => setTimeout(resolve, 100));
+        const user = userCredential.user;
+
+        if (user) {
+            const dbUser = await getDbUser(user.uid);
+            if (!dbUser) {
+                // If user doesn't exist in Firestore, create them
+                await createDbUser(user.uid, user.displayName || "Anonymous", user.email!);
+            }
+            await setTokenCookie(user);
         }
-        return userCredential.user;
+        return user;
     } catch(error: any) {
         // Handle specific popup errors
         switch (error.code) {
             case 'auth/popup-closed-by-user':
-              // This is a common case, we can choose to do nothing or log it
               console.log('Google sign-in popup closed by user.');
-              return null; // Don't throw an error, just return null
+              return null;
             case 'auth/account-exists-with-different-credential':
               throw new Error('An account already exists with the same email address but different sign-in credentials.');
             default:

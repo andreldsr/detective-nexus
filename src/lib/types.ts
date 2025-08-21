@@ -36,3 +36,17 @@ export const CaseDataSchema = z.object({
   startingClueIds: z.array(z.string()),
 });
 export type CaseData = z.infer<typeof CaseDataSchema>;
+
+export const CaseProgressSchema = z.object({
+  unlockedClueIds: z.array(z.string()),
+  // a timestamp would be useful here
+});
+export type CaseProgress = z.infer<typeof CaseProgressSchema>;
+
+export const UserDataSchema = z.object({
+  uid: z.string(),
+  email: z.string().email(),
+  name: z.string(),
+  caseProgress: z.record(z.string(), CaseProgressSchema), // caseId -> progress
+});
+export type UserData = z.infer<typeof UserDataSchema>;

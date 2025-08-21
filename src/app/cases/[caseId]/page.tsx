@@ -7,9 +7,11 @@ import { Terminal } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
+import { getCaseProgress } from '@/lib/user-service';
 
 export default async function CasePage({ params }: { params: { caseId: string } }) {
   const { caseData, error } = await getCase(params.caseId);
+  const savedProgress = await getCaseProgress(params.caseId);
 
   if (error || !caseData) {
     return (
@@ -40,6 +42,12 @@ export default async function CasePage({ params }: { params: { caseId: string } 
     );
   }
 
+  // Combine starting clues with saved progress, removing duplicates
+  const initialUnlockedClues = new Set([
+    ...caseData.startingClueIds,
+    ...(savedProgress || [])
+  ]);
+
   return (
     <main className="container mx-auto p-4 sm:p-6 lg:p-8">
       <header className="mb-8 flex items-center justify-between">
@@ -64,7 +72,11 @@ export default async function CasePage({ params }: { params: { caseId: string } 
           <p className="font-body text-lg">{caseData.description}</p>
         </CardContent>
       </Card>
-      <DetectiveBoard initialCaseData={caseData} />
+      <DetectiveBoard 
+        caseId={params.caseId}
+        initialCaseData={caseData} 
+        initialUnlockedClueIds={Array.from(initialUnlockedClues)}
+      />
     </main>
   );
 }

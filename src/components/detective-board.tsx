@@ -1,25 +1,32 @@
+
 "use client";
 
 import type { CaseData } from "@/lib/types";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { SuspectsPanel } from "./suspects-panel";
 import { CluesPanel } from "./clues-panel";
 import { ConfrontationPanel } from "./confrontation-panel";
 import { DialogueModal } from "./dialogue-modal";
 import { useToast } from "@/hooks/use-toast";
+import { updateCaseProgress } from "@/lib/user-service";
 
 type DetectiveBoardProps = {
+  caseId: string;
   initialCaseData: CaseData;
+  initialUnlockedClueIds: string[];
 };
 
-export function DetectiveBoard({ initialCaseData }: DetectiveBoardProps) {
+export function DetectiveBoard({ caseId, initialCaseData, initialUnlockedClueIds }: DetectiveBoardProps) {
   const [caseData, setCaseData] = useState(initialCaseData);
-  const [unlockedClues, setUnlockedClues] = useState(new Set<string>(caseData.startingClueIds));
+  const [unlockedClues, setUnlockedClues] = useState(new Set<string>(initialUnlockedClueIds));
   const [selectedCharacterId, setSelectedCharacterId] = useState<string | null>(null);
   const [selectedClueId, setSelectedClueId] = useState<string | null>(null);
   const [dialogueResult, setDialogueResult] = useState<{ characterName: string; response: string; } | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { toast } = useToast();
+  
+  // Ref to track if this is the initial render
+  const isInitialMount = useRef(true);
 
   const unlockedCluesList = useMemo(() => {
     return caseData.clues.filter(clue => unlockedClues.has(clue.id));
@@ -63,12 +70,28 @@ export function DetectiveBoard({ initialCaseData }: DetectiveBoardProps) {
     }
   };
   
-  // Simulate saving progress to Firestore
+  // Save progress to Firestore whenever unlockedClues changes
   useEffect(() => {
-    if(unlockedClues.size > caseData.startingClueIds.length) {
-      console.log("Progress updated. Unlocked clues:", Array.from(unlockedClues));
+    // We want to skip saving on the very first render,
+    // as we are just setting the initial state.
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
     }
-  }, [unlockedClues, caseData.startingClueIds.length]);
+    
+    // Only save if there's progress to save
+    if (unlockedClues.size > 0) {
+      console.log("Saving progress to Firestore. Unlocked clues:", Array.from(unlockedClues));
+      updateCaseProgress(caseId, Array.from(unlockedClues)).catch(error => {
+        console.error("Failed to save progress:", error);
+        toast({
+            variant: "destructive",
+            title: "Save Error",
+            description: "Could not save your progress to the server."
+        });
+      });
+    }
+  }, [unlockedClues, caseId, toast]);
 
   return (
     <>
