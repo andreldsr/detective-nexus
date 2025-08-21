@@ -87,7 +87,7 @@ export function DetectiveBoard({ caseId, initialCaseData, initialUnlockedClueIds
     console.log('Detected change in unlockedClues, attempting to save progress for user:', user.uid);
     updateCaseProgress(caseId, Array.from(unlockedClues), user.uid)
     .then(() => {
-      console.log("Progress saved successfully!");
+      // Intentionally not showing a toast on success to reduce noise
     })
     .catch(error => {
       console.error("Failed to save progress:", error);
