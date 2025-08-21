@@ -109,20 +109,6 @@ export function AuthForm({ mode }: AuthFormProps) {
             <AlertDescription>{error}</AlertDescription>
             </Alert>
         )}
-        <Button variant="outline" className="w-full" onClick={handleGoogleSignIn} disabled={isLoading}>
-            <GoogleIcon className="mr-2" />
-            {mode === 'login' ? 'Sign in with Google' : 'Sign up with Google'}
-        </Button>
-        <div className="relative my-6">
-          <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t" />
-          </div>
-          <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-background px-2 text-muted-foreground">
-              Or continue with
-            </span>
-          </div>
-        </div>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             
@@ -172,6 +158,20 @@ export function AuthForm({ mode }: AuthFormProps) {
             </Button>
           </form>
         </Form>
+        <div className="relative my-6">
+          <div className="absolute inset-0 flex items-center">
+            <span className="w-full border-t" />
+          </div>
+          <div className="relative flex justify-center text-xs uppercase">
+            <span className="bg-background px-2 text-muted-foreground">
+              Or
+            </span>
+          </div>
+        </div>
+        <Button variant="outline" className="w-full" onClick={handleGoogleSignIn} disabled={isLoading}>
+            <GoogleIcon className="mr-2" />
+            {mode === 'login' ? 'Sign in with Google' : 'Sign up with Google'}
+        </Button>
         <div className="mt-4 text-center text-sm">
           {mode === "login" ? (
             <>
