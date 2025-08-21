@@ -48,11 +48,10 @@ export default async function CasePage({ params }: { params: { caseId: string } 
     );
   }
 
-  // Combine starting clues with saved progress, removing duplicates
-  const initialUnlockedClues = new Set([
-    ...caseData.startingClueIds,
-    ...(savedProgress || [])
-  ]);
+  // If saved progress exists and is not empty, use it. Otherwise, use starting clues.
+  const initialUnlockedClues = (savedProgress && savedProgress.length > 0)
+    ? savedProgress
+    : caseData.startingClueIds;
 
   return (
     <main className="container mx-auto p-4 sm:p-6 lg:p-8">
@@ -81,7 +80,7 @@ export default async function CasePage({ params }: { params: { caseId: string } 
       <DetectiveBoard 
         caseId={params.caseId}
         initialCaseData={caseData} 
-        initialUnlockedClueIds={Array.from(initialUnlockedClues)}
+        initialUnlockedClueIds={initialUnlockedClues}
       />
     </main>
   );
