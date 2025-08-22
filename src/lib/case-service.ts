@@ -24,6 +24,9 @@ export async function getCase(caseId: string): Promise<{ caseData: CaseData | nu
         return { caseData: null, error: `Failed to validate case data from Firestore. ${parsedData.error.message}` };
     }
     
+    // IMPORTANT: Do not generate images here. It's too slow and causes timeouts.
+    // The placeholder URLs from data.ts will be used instead.
+    
     return { caseData: parsedData.data, error: null };
   } catch (e: any) {
     console.error("Error getting document:", e);
