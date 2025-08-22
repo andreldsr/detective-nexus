@@ -26,6 +26,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   }, [user, loading, router, pathname]);
 
+  // While firebase is checking auth, show a skeleton loader
   if (loading) {
     return (
         <div className="flex flex-col items-center justify-center min-h-screen p-8">
@@ -39,6 +40,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const isAuthPage = pathname.startsWith("/login") || pathname.startsWith("/signup");
+  
   // Don't render protected pages if user is not logged in to prevent flashes of content
   if (!user && !isAuthPage) {
     return null; 

@@ -38,7 +38,7 @@ export async function signUp(email: string, pass: string, displayName: string) {
     // Create user document in Firestore
     await createDbUser(userCredential.user.uid, displayName, email);
     
-    await setTokenCookie(userCredential.user);
+    // The onAuthStateChanged listener will handle setting the cookie
     return userCredential.user;
   } catch (error: any) {
     // Provide more specific error messages
@@ -58,7 +58,7 @@ export async function signUp(email: string, pass: string, displayName: string) {
 export async function signIn(email: string, pass: string) {
   try {
     const userCredential = await signInWithEmailAndPassword(auth, email, pass);
-    await setTokenCookie(userCredential.user);
+    // The onAuthStateChanged listener will handle setting the cookie
     return userCredential.user;
   } catch (error: any) {
      // Provide more specific error messages
@@ -86,7 +86,7 @@ export async function signInWithGoogle() {
                 // If user doesn't exist in Firestore, create them
                 await createDbUser(user.uid, user.displayName || "Anonymous", user.email!);
             }
-            await setTokenCookie(user);
+             // The onAuthStateChanged listener will handle setting the cookie
         }
         return user;
     } catch(error: any) {
@@ -108,7 +108,7 @@ export async function signInWithGoogle() {
 export async function signOutUser() {
     try {
         await signOut(auth);
-        await clearTokenCookie();
+        // The onAuthStateChanged listener will handle clearing the cookie
     } catch(error: any) {
         console.error("Error signing out: ", error);
         throw new Error("Failed to sign out.");
@@ -121,8 +121,13 @@ export function useUser() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setUser(user);
+      if (user) {
+        await setTokenCookie(user);
+      } else {
+        await clearTokenCookie();
+      }
       setLoading(false);
     });
 

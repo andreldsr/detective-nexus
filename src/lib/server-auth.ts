@@ -6,7 +6,7 @@ import { admin } from './firebase-admin';
 import type { User } from 'firebase/auth';
 
 export async function getCurrentUser(): Promise<User | null> {
-  const idToken = cookies().get('firebaseIdToken')?.value;
+  const idToken = (await cookies()).get('firebaseIdToken')?.value;
 
   if (!idToken) {
     return null;
