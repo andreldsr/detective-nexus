@@ -3,12 +3,13 @@ import { DetectiveBoard } from '@/components/detective-board';
 import { getCase } from '@/lib/case-service';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Terminal } from 'lucide-react';
+import { Terminal, User as UserIcon } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import { getCaseProgress } from '@/lib/user-service';
 import { getCurrentUser } from '@/lib/server-auth';
+import { SignOutButton } from '@/components/auth/sign-out-button';
 
 export default async function CasePage({ params }: { params: { caseId: string } }) {
   const { caseData, error } = await getCase(params.caseId);
@@ -66,7 +67,15 @@ export default async function CasePage({ params }: { params: { caseId: string } 
             <h1 className="font-headline text-5xl font-bold text-primary">Detective Nexus</h1>
             <p className="text-muted-foreground mt-2">Unravel the mystery. One clue at a time.</p>
         </div>
-        <div className="w-36"></div>
+        <div className="w-48 flex justify-end items-center gap-4">
+          {user?.displayName && (
+            <span className="text-muted-foreground flex items-center gap-2 text-sm">
+              <UserIcon className="h-4 w-4" />
+              {user.displayName}
+            </span>
+          )}
+          <SignOutButton />
+        </div>
       </header>
       <Card className="mb-8 bg-card/50 border-primary/20">
         <CardHeader>

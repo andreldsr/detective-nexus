@@ -2,22 +2,33 @@
 import { listCases } from '@/lib/case-service';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Terminal, Search, LogOut } from 'lucide-react';
+import { Terminal, Search, User as UserIcon } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { SignOutButton } from '@/components/auth/sign-out-button';
+import { getCurrentUser } from '@/lib/server-auth';
 
 export default async function Home() {
   const { cases, error } = await listCases();
+  const user = await getCurrentUser();
 
   return (
     <main className="container mx-auto p-4 sm:p-6 lg:p-8">
       <header className="flex justify-between items-center mb-12">
+        <div className="w-48"></div> {/* Spacer */}
         <div className="text-center flex-1">
           <h1 className="font-headline text-5xl font-bold text-primary">Detective Nexus</h1>
           <p className="text-muted-foreground mt-2">Select a case file to begin your investigation.</p>
         </div>
-        <SignOutButton />
+        <div className="w-48 flex justify-end items-center gap-4">
+          {user?.displayName && (
+            <span className="text-muted-foreground flex items-center gap-2">
+              <UserIcon className="h-4 w-4" />
+              {user.displayName}
+            </span>
+          )}
+          <SignOutButton />
+        </div>
       </header>
 
       {error && (
