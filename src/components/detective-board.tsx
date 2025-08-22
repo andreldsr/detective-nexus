@@ -72,26 +72,24 @@ export function DetectiveBoard({ caseId, initialCaseData, initialUnlockedClueIds
   };
   
   useEffect(() => {
-    // Don't save on initial mount
     if (isInitialMount.current) {
       isInitialMount.current = false;
       return;
     }
     
-    // Don't save if there's no user logged in
     if (!user) {
       return;
     }
   
     updateCaseProgress(caseId, Array.from(unlockedClues), user.uid)
-    .catch(error => {
-      console.error("Failed to save progress:", error);
-      toast({
-          variant: "destructive",
-          title: "Save Error",
-          description: "Could not save your progress to the server."
+      .catch(error => {
+        console.error("Failed to save progress:", error);
+        toast({
+            variant: "destructive",
+            title: "Save Error",
+            description: "Could not save your progress to the server."
+        });
       });
-    });
   }, [unlockedClues, caseId, user, toast]);
 
 
