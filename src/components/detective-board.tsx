@@ -27,7 +27,7 @@ export function DetectiveBoard({ caseId, initialCaseData, initialUnlockedClueIds
   const { toast } = useToast();
   const isInitialMount = useRef(true);
 
-  const { user, loading } = useUser();
+  const { user } = useUser();
 
   const unlockedCluesList = useMemo(() => {
     return caseData.clues.filter(clue => unlockedClues.has(clue.id));
@@ -80,15 +80,10 @@ export function DetectiveBoard({ caseId, initialCaseData, initialUnlockedClueIds
     
     // Don't save if there's no user logged in
     if (!user) {
-      console.log('No user, skipping progress save.');
       return;
     }
   
-    console.log('Detected change in unlockedClues, attempting to save progress for user:', user.uid);
     updateCaseProgress(caseId, Array.from(unlockedClues), user.uid)
-    .then(() => {
-      // Intentionally not showing a toast on success to reduce noise
-    })
     .catch(error => {
       console.error("Failed to save progress:", error);
       toast({
