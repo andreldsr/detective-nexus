@@ -5,7 +5,6 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -42,7 +41,6 @@ const GoogleIcon = (props: React.SVGProps<SVGSVGElement>) => (
 
 
 export function AuthForm({ mode }: AuthFormProps) {
-  const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -68,7 +66,7 @@ export function AuthForm({ mode }: AuthFormProps) {
         const loginValues = values as z.infer<typeof loginSchema>;
         await signIn(loginValues.email, loginValues.password);
       }
-      router.push("/");
+      window.location.assign("/");
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -81,7 +79,7 @@ export function AuthForm({ mode }: AuthFormProps) {
     setError(null);
     try {
         await signInWithGoogle();
-        router.push("/");
+        window.location.assign("/");
     } catch (err: any) {
         setError(err.message);
     } finally {
