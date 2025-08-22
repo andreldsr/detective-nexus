@@ -14,16 +14,19 @@ import { auth, googleProvider } from "./firebase";
 import { useEffect, useState } from "react";
 import { createDbUser, getDbUser } from "./user-service";
 
-async function setTokenCookie(user: User) {
+async function setSession(user: User) {
     const idToken = await user.getIdToken();
-    await fetch('/api/auth/session', {
+    const response = await fetch('/api/auth/session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ idToken }),
     });
+    if (!response.ok) {
+        throw new Error('Failed to set session cookie');
+    }
 }
 
-async function clearTokenCookie() {
+async function clearSession() {
     await fetch('/api/auth/session', {
         method: 'DELETE',
     });
@@ -35,13 +38,11 @@ export async function signUp(email: string, pass: string, displayName: string) {
     const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
     await updateProfile(userCredential.user, { displayName });
     
-    // Create user document in Firestore
     await createDbUser(userCredential.user.uid, displayName, email);
+    await setSession(userCredential.user);
     
-    // The onAuthStateChanged listener will handle setting the cookie
     return userCredential.user;
   } catch (error: any) {
-    // Provide more specific error messages
     switch (error.code) {
       case 'auth/email-already-in-use':
         throw new Error('This email address is already in use.');
@@ -58,10 +59,9 @@ export async function signUp(email: string, pass: string, displayName: string) {
 export async function signIn(email: string, pass: string) {
   try {
     const userCredential = await signInWithEmailAndPassword(auth, email, pass);
-    // The onAuthStateChanged listener will handle setting the cookie
+    await setSession(userCredential.user);
     return userCredential.user;
   } catch (error: any) {
-     // Provide more specific error messages
     switch (error.code) {
       case 'auth/user-not-found':
       case 'auth/wrong-password':
@@ -83,14 +83,12 @@ export async function signInWithGoogle() {
         if (user) {
             const dbUser = await getDbUser(user.uid);
             if (!dbUser) {
-                // If user doesn't exist in Firestore, create them
                 await createDbUser(user.uid, user.displayName || "Anonymous", user.email!);
             }
-             // The onAuthStateChanged listener will handle setting the cookie
+            await setSession(user);
         }
         return user;
     } catch(error: any) {
-        // Handle specific popup errors
         switch (error.code) {
             case 'auth/popup-closed-by-user':
               console.log('Google sign-in popup closed by user.');
@@ -108,7 +106,7 @@ export async function signInWithGoogle() {
 export async function signOutUser() {
     try {
         await signOut(auth);
-        // The onAuthStateChanged listener will handle clearing the cookie
+        await clearSession();
     } catch(error: any) {
         console.error("Error signing out: ", error);
         throw new Error("Failed to sign out.");
@@ -123,11 +121,6 @@ export function useUser() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setUser(user);
-      if (user) {
-        await setTokenCookie(user);
-      } else {
-        await clearTokenCookie();
-      }
       setLoading(false);
     });
 
