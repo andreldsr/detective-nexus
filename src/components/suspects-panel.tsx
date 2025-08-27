@@ -38,7 +38,7 @@ export function SuspectsPanel({ characters, selectedCharacterId, onSelectCharact
             {characters.map((character) => (
               <Dialog key={character.id}>
                 <Card
-                  className="p-3 transition-all data-[selected=true]:ring-2 data-[selected=true]:ring-primary"
+                  className="p-3 transition-all data-[selected=true]:ring-2 data-[selected=true]:ring-primary animate-in fade-in duration-500"
                   data-selected={selectedCharacterId === character.id}
                 >
                   <div 

@@ -13,6 +13,7 @@ export const DialogueSchema = z.object({
   clueId: z.string(),
   response: z.string(),
   unlocksClueId: z.string().optional(),
+  unlocksCharacterId: z.string().optional(),
 });
 export type Dialogue = z.infer<typeof DialogueSchema>;
 
@@ -34,12 +35,13 @@ export const CaseDataSchema = z.object({
   characters: z.array(CharacterSchema),
   clues: z.array(ClueSchema),
   startingClueIds: z.array(z.string()),
+  startingCharacterIds: z.array(z.string()),
 });
 export type CaseData = z.infer<typeof CaseDataSchema>;
 
 export const CaseProgressSchema = z.object({
   unlockedClueIds: z.array(z.string()),
-  // a timestamp would be useful here
+  unlockedCharacterIds: z.array(z.string()),
 });
 export type CaseProgress = z.infer<typeof CaseProgressSchema>;
 

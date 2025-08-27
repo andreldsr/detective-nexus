@@ -15,7 +15,7 @@ export default async function CasePage({ params }: { params: { caseId: string } 
   const { caseData, error } = await getCase(params.caseId);
   const user = await getCurrentUser();
   
-  let savedProgress: string[] | null = null;
+  let savedProgress;
   if (user) {
     savedProgress = await getCaseProgress(params.caseId, user.uid);
   }
@@ -49,10 +49,13 @@ export default async function CasePage({ params }: { params: { caseId: string } 
     );
   }
 
-  // If saved progress exists and is not empty, use it. Otherwise, use starting clues.
-  const initialUnlockedClues = (savedProgress && savedProgress.length > 0)
-    ? savedProgress
+  const initialUnlockedClues = (savedProgress && savedProgress.unlockedClueIds.length > 0)
+    ? savedProgress.unlockedClueIds
     : caseData.startingClueIds;
+
+  const initialUnlockedCharacters = (savedProgress && savedProgress.unlockedCharacterIds.length > 0)
+    ? savedProgress.unlockedCharacterIds
+    : caseData.startingCharacterIds;
 
   return (
     <main className="container mx-auto p-4 sm:p-6 lg:p-8">
@@ -90,6 +93,7 @@ export default async function CasePage({ params }: { params: { caseId: string } 
         caseId={params.caseId}
         initialCaseData={caseData} 
         initialUnlockedClueIds={initialUnlockedClues}
+        initialUnlockedCharacterIds={initialUnlockedCharacters}
       />
     </main>
   );

@@ -15,11 +15,13 @@ type DetectiveBoardProps = {
   caseId: string;
   initialCaseData: CaseData;
   initialUnlockedClueIds: string[];
+  initialUnlockedCharacterIds: string[];
 };
 
-export function DetectiveBoard({ caseId, initialCaseData, initialUnlockedClueIds }: DetectiveBoardProps) {
+export function DetectiveBoard({ caseId, initialCaseData, initialUnlockedClueIds, initialUnlockedCharacterIds }: DetectiveBoardProps) {
   const [caseData, setCaseData] = useState(initialCaseData);
   const [unlockedClues, setUnlockedClues] = useState(new Set<string>(initialUnlockedClueIds));
+  const [unlockedCharacters, setUnlockedCharacters] = useState(new Set<string>(initialUnlockedCharacterIds));
   const [selectedCharacterId, setSelectedCharacterId] = useState<string | null>(null);
   const [selectedClueId, setSelectedClueId] = useState<string | null>(null);
   const [dialogueResult, setDialogueResult] = useState<{ characterName: string; response: string; } | null>(null);
@@ -32,6 +34,11 @@ export function DetectiveBoard({ caseId, initialCaseData, initialUnlockedClueIds
   const unlockedCluesList = useMemo(() => {
     return caseData.clues.filter(clue => unlockedClues.has(clue.id));
   }, [unlockedClues, caseData.clues]);
+
+  const unlockedCharactersList = useMemo(() => {
+    return caseData.characters.filter(character => unlockedCharacters.has(character.id));
+  }, [unlockedCharacters, caseData.characters]);
+
 
   const handleConfrontation = () => {
     if (!selectedCharacterId || !selectedClueId) {
@@ -69,6 +76,24 @@ export function DetectiveBoard({ caseId, initialCaseData, initialUnlockedClueIds
         }, 300);
       }
     }
+
+    if (dialogue?.unlocksCharacterId) {
+      const newCharId = dialogue.unlocksCharacterId;
+      if (!unlockedCharacters.has(newCharId)) {
+        setTimeout(() => {
+          setUnlockedCharacters(prev => {
+            const newSet = new Set(prev);
+            newSet.add(newCharId);
+            return newSet;
+          });
+          const newChar = caseData.characters.find(c => c.id === newCharId);
+          toast({
+            title: "New Suspect Unlocked!",
+            description: newChar?.name,
+          });
+        }, 300);
+      }
+    }
   };
   
   useEffect(() => {
@@ -81,7 +106,12 @@ export function DetectiveBoard({ caseId, initialCaseData, initialUnlockedClueIds
       return;
     }
   
-    updateCaseProgress(caseId, Array.from(unlockedClues), user.uid)
+    const progress = {
+        unlockedClueIds: Array.from(unlockedClues),
+        unlockedCharacterIds: Array.from(unlockedCharacters),
+    }
+
+    updateCaseProgress(caseId, progress, user.uid)
       .catch(error => {
         console.error("Failed to save progress:", error);
         toast({
@@ -90,7 +120,7 @@ export function DetectiveBoard({ caseId, initialCaseData, initialUnlockedClueIds
             description: "Could not save your progress to the server."
         });
       });
-  }, [unlockedClues, caseId, user, toast]);
+  }, [unlockedClues, unlockedCharacters, caseId, user, toast]);
 
 
   return (
@@ -98,14 +128,14 @@ export function DetectiveBoard({ caseId, initialCaseData, initialUnlockedClueIds
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
         <div className="lg:col-span-1">
           <SuspectsPanel
-            characters={caseData.characters}
+            characters={unlockedCharactersList}
             selectedCharacterId={selectedCharacterId}
             onSelectCharacter={setSelectedCharacterId}
           />
         </div>
         <div className="lg:col-span-1 lg:row-start-1">
            <ConfrontationPanel
-            characters={caseData.characters}
+            characters={unlockedCharactersList}
             unlockedClues={unlockedCluesList}
             selectedCharacterId={selectedCharacterId}
             setSelectedCharacterId={setSelectedCharacterId}

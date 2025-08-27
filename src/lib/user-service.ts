@@ -2,7 +2,7 @@
 'use server';
 
 import { db } from './firebase-admin';
-import type { UserData } from './types';
+import type { UserData, CaseProgress } from './types';
 
 
 
@@ -27,22 +27,20 @@ export async function getDbUser(uid: string): Promise<UserData | null> {
     return null;
 }
 
-export async function getCaseProgress(caseId: string, currentUserId: string): Promise<string[] | null> {
+export async function getCaseProgress(caseId: string, currentUserId: string): Promise<CaseProgress | null> {
     const user = await getDbUser(currentUserId);
-    return user?.caseProgress[caseId]?.unlockedClueIds ?? null;
+    return user?.caseProgress[caseId] ?? null;
 }
 
 
-export async function updateCaseProgress(caseId: string, unlockedClueIds: string[], currentUserId: string): Promise<void> {
+export async function updateCaseProgress(caseId: string, progress: CaseProgress, currentUserId: string): Promise<void> {
     try {
         console.log("User ID:", currentUserId);
         
         const userRef = db.collection('users').doc(currentUserId);
         const progressToSave = {
             caseProgress: {
-                [caseId]: {
-                    unlockedClueIds: unlockedClueIds
-                }
+                [caseId]: progress
             }
         };
         

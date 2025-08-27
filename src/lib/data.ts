@@ -5,6 +5,7 @@ export const caseData: CaseData = {
   description: 'The famous "Azure Star" sapphire has been stolen from Lady Beatrice\'s private collection. The thief was swift, leaving only a few subtle clues behind. Interrogate the suspects and piece together the evidence to find the culprit.',
   difficulty: 'Medium',
   startingClueIds: ['note', 'argument', 'journal_entry'],
+  startingCharacterIds: ['beatrice', 'arthur', 'clara'],
   characters: [
     {
       id: 'beatrice',
@@ -24,7 +25,8 @@ export const caseData: CaseData = {
         },
         {
           clueId: 'journal_entry',
-          response: 'My journal? How did you get that? Yes, I was concerned about Arthur, but I never suspected he would steal from me. I feel so betrayed.',
+          response: 'My journal? How did you get that? Yes, I was concerned about Arthur, but I never suspected he would steal from me. My niece Eleanor has also been acting strangely lately, asking for money... perhaps you should speak with her.',
+          unlocksCharacterId: 'eleanor',
         }
       ],
     },
@@ -50,6 +52,11 @@ export const caseData: CaseData = {
           response: 'My... my debts? How did you... *sigh*. It\'s true. I owe a great deal of money. I saw the sapphire as my only way out. I took it. I was going to sell it to a collector and replace it with a fake later. The note was a diversion.',
           unlocksClueId: 'confession',
         },
+         {
+          clueId: 'torn_fabric',
+          response: 'A piece of fabric? I don\'t recognize it. Perhaps it belongs to that shady art dealer, Vincent Costello. I saw him lurking around the property last week.',
+          unlocksCharacterId: 'vincent',
+        },
       ],
     },
     {
@@ -68,6 +75,11 @@ export const caseData: CaseData = {
           clueId: 'argument',
           response: 'We were arguing, yes. But I would never steal from Lady Beatrice! I was just asking for a raise. I saw Arthur near the garden with a shovel earlier... odd, since the gardener handles that.',
           unlocksClueId: 'footprint'
+        },
+        {
+          clueId: 'journal_entry',
+          response: 'Lady Beatrice keeps a journal? I wouldn\'t know. I found a scrap of silk near the rose bushes this morning, maybe it\'s a clue?',
+          unlocksClueId: 'torn_fabric',
         }
       ],
     },
