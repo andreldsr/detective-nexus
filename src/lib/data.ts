@@ -167,7 +167,7 @@ export const caseData: CaseData = {
       id: 'journal_entry',
       title: 'Lady Beatrice\'s Journal',
       description: 'An entry from Lady Beatrice\'s journal, dated a week before the theft: "I fear Arthur is becoming desperate. His creditors have been calling the house. I must speak with him, but I do dread confrontation so."',
-      image: 'https://placehold.co/600x800.png',
+      image: 'https://placehold.co/800x600.png',
       imageHint: 'handwritten journal page',
     }
   ],
