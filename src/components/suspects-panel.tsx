@@ -82,8 +82,8 @@ export function SuspectsPanel({ characters, selectedCharacterId, onSelectCharact
                           )}
                         </div>
                       </div>
-                       <DialogDescription as="div" className="font-body text-base text-foreground pt-4">
-                        <div className="italic">&quot;{character.statement}&quot;</div>
+                       <DialogDescription className="font-body text-base text-foreground pt-4 italic">
+                        &quot;{character.statement}&quot;
                       </DialogDescription>
                     </DialogHeader>
                     <DialogFooter>
