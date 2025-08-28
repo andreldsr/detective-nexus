@@ -5,7 +5,7 @@ import type { Clue } from "@/lib/types";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Image from "next/image";
 import { FileScan, ZoomIn } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Badge } from "./ui/badge";
 import { ScrollArea } from "./ui/scroll-area";
 
@@ -64,6 +64,9 @@ export function CluesPanel({ allClues, unlockedClueIds, selectedClueId, onSelect
                         <DialogContent className="max-w-5xl">
                           <DialogHeader>
                             <DialogTitle className="font-headline">{clue.title}</DialogTitle>
+                            <DialogDescription className="font-body text-base pt-2 text-left">
+                              {clue.description}
+                            </DialogDescription>
                           </DialogHeader>
                            <Image
                               src={clue.image}
