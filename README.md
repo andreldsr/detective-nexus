@@ -99,7 +99,7 @@ To avoid exposing keys, prefer environment variables for all Firebase client con
 
 ## Auth Guarding
 
-- AuthProvider (client) uses useUser() to detect auth state and redirects:
+- AuthProvider (client) uses cookie-backed useSessionUser() to detect auth state and redirects:
   - Unauthenticated users are sent to /login for protected pages
   - Authenticated users are redirected away from /login and /signup to /
 - Server components rely on getCurrentUser() which verifies the `session` cookie

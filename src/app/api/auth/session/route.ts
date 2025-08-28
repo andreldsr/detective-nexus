@@ -13,11 +13,11 @@ export async function POST(request: NextRequest) {
   }
   
   // Set session expiration to 5 days.
-  const expiresIn = 60 * 60 * 24 * 5 * 1000;
+  const expiresInMs = 60 * 60 * 24 * 5 * 1000;
 
   try {
     console.log('API: Attempting to create session cookie.');
-    const sessionCookie = await admin.auth().createSessionCookie(idToken, { expiresIn });
+    const sessionCookie = await admin.auth().createSessionCookie(idToken, { expiresIn: expiresInMs });
     const response = NextResponse.json({status: 'success'}, {status: 200});
 
     response.cookies.set({
@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      maxAge: expiresIn,
+      maxAge: Math.floor(expiresInMs / 1000),
       path: '/',
     });
 

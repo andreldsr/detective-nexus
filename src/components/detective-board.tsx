@@ -9,7 +9,7 @@ import { ConfrontationPanel } from "./confrontation-panel";
 import { DialogueModal } from "./dialogue-modal";
 import { useToast } from "@/hooks/use-toast";
 import { updateCaseProgress } from "@/lib/user-service";
-import { useUser } from "@/lib/auth-service";
+import { useSessionUser } from "@/lib/session-client";
 
 type DetectiveBoardProps = {
   caseId: string;
@@ -29,7 +29,7 @@ export function DetectiveBoard({ caseId, initialCaseData, initialUnlockedClueIds
   const { toast } = useToast();
   const isInitialMount = useRef(true);
 
-  const { user } = useUser();
+  const { user } = useSessionUser();
 
   const unlockedCluesList = useMemo(() => {
     return caseData.clues.filter(clue => unlockedClues.has(clue.id));
