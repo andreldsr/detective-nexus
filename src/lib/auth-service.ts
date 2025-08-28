@@ -19,6 +19,7 @@ async function setSession(user: User) {
     const response = await fetch('/api/auth/session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ idToken }),
     });
     if (!response.ok) {
@@ -29,6 +30,7 @@ async function setSession(user: User) {
 async function clearSession() {
     await fetch('/api/auth/session', {
         method: 'DELETE',
+        credentials: 'include',
     });
 }
 

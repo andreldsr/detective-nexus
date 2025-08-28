@@ -25,6 +25,7 @@ export async function POST(request: NextRequest) {
       value: sessionCookie,
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
       maxAge: expiresIn,
       path: '/',
     });

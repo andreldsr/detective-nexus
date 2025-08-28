@@ -103,6 +103,9 @@ To avoid exposing keys, prefer environment variables for all Firebase client con
   - Unauthenticated users are sent to /login for protected pages
   - Authenticated users are redirected away from /login and /signup to /
 - Server components rely on getCurrentUser() which verifies the `session` cookie
+- Client components can also read the cookie-backed session (without Firebase SDK) via:
+  - GET /api/auth/me to retrieve the current user from the httpOnly cookie
+  - useSessionUser() or getSessionUser() from src/lib/session-client.ts
 
 ---
 

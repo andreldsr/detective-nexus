@@ -11,7 +11,7 @@ export type ServerUser = {
 };
 
 export async function getCurrentUser(): Promise<ServerUser | null> {
-  const sessionCookie = (await cookies()).get('session')?.value;
+  const sessionCookie = cookies().get('session')?.value;
   console.log('Server-Auth: Checking for session cookie. Found:', !!sessionCookie);
 
   if (!sessionCookie) {
