@@ -27,10 +27,11 @@ export function DetectiveBoard({ caseId, initialCaseData, initialUnlockedClueIds
   const [dialogueResult, setDialogueResult] = useState<{ characterName: string; response: string; } | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { toast } = useToast();
-  const isInitialMount = useRef(true);
 
   const { user } = useSessionUser();
   const hydratedFromServer = useRef(false);
+  // Avoid saving defaults before we attempt to hydrate saved progress
+  const hydrationAttempted = useRef(false);
 
   const unlockedCluesList = useMemo(() => {
     return caseData.clues.filter(clue => unlockedClues.has(clue.id));
@@ -130,18 +131,18 @@ export function DetectiveBoard({ caseId, initialCaseData, initialUnlockedClueIds
         hydratedFromServer.current = true;
       } catch (e) {
         // ignore hydration errors; the user can still play with defaults
+      } finally {
+        // Mark that we attempted hydration (success or not) to allow saving on next user-driven changes
+        hydrationAttempted.current = true;
       }
     }
     hydrate();
   }, [caseId, user]);
 
-  // Persist progress whenever it changes (skip first render)
+  // Persist progress whenever it changes, but only after hydration attempt
   useEffect(() => {
-    if (isInitialMount.current) {
-      isInitialMount.current = false;
-      return;
-    }
-    if (!user) return;
+    // Do not save until we've attempted to hydrate from the server to avoid overwriting saved progress with defaults
+    if (!user || !hydrationAttempted.current) return;
 
     const progress = {
       unlockedClueIds: Array.from(unlockedClues),
