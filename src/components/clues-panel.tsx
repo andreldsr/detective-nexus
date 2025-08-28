@@ -62,19 +62,21 @@ export function CluesPanel({ allClues, unlockedClueIds, selectedClueId, onSelect
                           </div>
                         </DialogTrigger>
                         <DialogContent className="max-w-5xl">
-                          <DialogHeader>
-                            <DialogTitle className="font-headline">{clue.title}</DialogTitle>
-                            <DialogDescription className="font-body text-base pt-2 text-left">
-                              {clue.description}
-                            </DialogDescription>
-                          </DialogHeader>
-                           <Image
-                              src={clue.image}
-                              alt={`Evidence: ${clue.title}`}
-                              width={1200}
-                              height={800}
-                              className="rounded-md w-full object-contain"
-                            />
+                          <ScrollArea className="max-h-[80vh] p-6">
+                            <DialogHeader>
+                              <DialogTitle className="font-headline">{clue.title}</DialogTitle>
+                              <DialogDescription className="font-body text-base pt-2 text-left">
+                                {clue.description}
+                              </DialogDescription>
+                            </DialogHeader>
+                            <Image
+                                src={clue.image}
+                                alt={`Evidence: ${clue.title}`}
+                                width={1200}
+                                height={800}
+                                className="rounded-md w-full object-contain mt-4"
+                              />
+                          </ScrollArea>
                         </DialogContent>
                       </Dialog>
                       <CardDescription className="font-body text-base">{clue.description}</CardDescription>
