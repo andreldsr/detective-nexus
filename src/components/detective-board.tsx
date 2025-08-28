@@ -30,6 +30,7 @@ export function DetectiveBoard({ caseId, initialCaseData, initialUnlockedClueIds
   const isInitialMount = useRef(true);
 
   const { user } = useSessionUser();
+  const hydratedFromServer = useRef(false);
 
   const unlockedCluesList = useMemo(() => {
     return caseData.clues.filter(clue => unlockedClues.has(clue.id));
@@ -113,30 +114,48 @@ export function DetectiveBoard({ caseId, initialCaseData, initialUnlockedClueIds
     }
   };
   
+  // Hydrate with saved progress after mount for faster initial render
+  useEffect(() => {
+    async function hydrate() {
+      if (!user || hydratedFromServer.current) return;
+      try {
+        const res = await fetch(`/api/progress/${caseId}`, { credentials: 'include' });
+        if (!res.ok) return;
+        const data = await res.json();
+        const progress = data?.progress as { unlockedClueIds: string[]; unlockedCharacterIds: string[] } | null;
+        if (progress && (progress.unlockedClueIds?.length || progress.unlockedCharacterIds?.length)) {
+          setUnlockedClues(new Set(progress.unlockedClueIds || Array.from(unlockedClues)));
+          setUnlockedCharacters(new Set(progress.unlockedCharacterIds || Array.from(unlockedCharacters)));
+        }
+        hydratedFromServer.current = true;
+      } catch (e) {
+        // ignore hydration errors; the user can still play with defaults
+      }
+    }
+    hydrate();
+  }, [caseId, user]);
+
+  // Persist progress whenever it changes (skip first render)
   useEffect(() => {
     if (isInitialMount.current) {
       isInitialMount.current = false;
       return;
     }
-    
-    if (!user) {
-      return;
-    }
-  
-    const progress = {
-        unlockedClueIds: Array.from(unlockedClues),
-        unlockedCharacterIds: Array.from(unlockedCharacters),
-    }
+    if (!user) return;
 
-    updateCaseProgress(caseId, progress, user.uid)
-      .catch(error => {
-        console.error("Failed to save progress:", error);
-        toast({
-            variant: "destructive",
-            title: "Save Error",
-            description: "Could not save your progress to the server."
-        });
+    const progress = {
+      unlockedClueIds: Array.from(unlockedClues),
+      unlockedCharacterIds: Array.from(unlockedCharacters),
+    };
+
+    updateCaseProgress(caseId, progress, user.uid).catch((error) => {
+      console.error("Failed to save progress:", error);
+      toast({
+        variant: "destructive",
+        title: "Save Error",
+        description: "Could not save your progress to the server.",
       });
+    });
   }, [unlockedClues, unlockedCharacters, caseId, user, toast]);
 
 

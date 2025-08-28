@@ -3,11 +3,11 @@ import { DetectiveBoard } from '@/components/detective-board';
 import { getCase } from '@/lib/case-service';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Terminal, User as UserIcon } from 'lucide-react';
+import { Terminal } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
-import { getCaseProgress } from '@/lib/user-service';
+// Progress is now fetched client-side to speed up initial render
 import { getCurrentUser } from '@/lib/server-auth';
 import { SignOutButton } from '@/components/auth/sign-out-button';
 import { UserBadge } from '@/components/user-badge';
@@ -16,10 +16,6 @@ export default async function CasePage({ params }: { params: { caseId: string } 
   const { caseData, error } = await getCase(params.caseId);
   const user = await getCurrentUser();
   
-  let savedProgress;
-  if (user) {
-    savedProgress = await getCaseProgress(params.caseId, user.uid);
-  }
 
   if (error || !caseData) {
     return (
@@ -50,13 +46,9 @@ export default async function CasePage({ params }: { params: { caseId: string } 
     );
   }
 
-  const initialUnlockedClues = (savedProgress && savedProgress.unlockedClueIds.length > 0)
-    ? savedProgress.unlockedClueIds
-    : caseData.startingClueIds;
-
-  const initialUnlockedCharacters = (savedProgress && savedProgress.unlockedCharacterIds.length > 0)
-    ? savedProgress.unlockedCharacterIds
-    : caseData.startingCharacterIds;
+  // Initialize with starting defaults; saved progress will hydrate on the client for faster TTFB
+  const initialUnlockedClues = caseData.startingClueIds;
+  const initialUnlockedCharacters = caseData.startingCharacterIds;
 
   return (
     <main className="container mx-auto p-4 sm:p-6 lg:p-8">
