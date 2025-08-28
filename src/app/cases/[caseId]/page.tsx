@@ -10,6 +10,7 @@ import { ArrowLeft } from 'lucide-react';
 import { getCaseProgress } from '@/lib/user-service';
 import { getCurrentUser } from '@/lib/server-auth';
 import { SignOutButton } from '@/components/auth/sign-out-button';
+import { UserBadge } from '@/components/user-badge';
 
 export default async function CasePage({ params }: { params: { caseId: string } }) {
   const { caseData, error } = await getCase(params.caseId);
@@ -72,10 +73,7 @@ export default async function CasePage({ params }: { params: { caseId: string } 
         </div>
         <div className="w-48 flex justify-end items-center gap-4">
           {user?.displayName && (
-            <span className="text-muted-foreground flex items-center gap-2 text-sm">
-              <UserIcon className="h-4 w-4" />
-              {user.displayName}
-            </span>
+            <UserBadge name={user.displayName} />
           )}
           <SignOutButton />
         </div>

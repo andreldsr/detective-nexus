@@ -6,6 +6,7 @@ import { Terminal, Search, User as UserIcon } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { SignOutButton } from '@/components/auth/sign-out-button';
+import { UserBadge } from '@/components/user-badge';
 import { getCurrentUser } from '@/lib/server-auth';
 
 export default async function Home() {
@@ -22,10 +23,8 @@ export default async function Home() {
         </div>
         <div className="w-48 flex justify-end items-center gap-4">
           {user?.displayName && (
-            <span className="text-muted-foreground flex items-center gap-2">
-              <UserIcon className="h-4 w-4" />
-              {user.displayName}
-            </span>
+            // Stylish user badge
+            <UserBadge name={user.displayName} />
           )}
           <SignOutButton />
         </div>
