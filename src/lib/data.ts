@@ -51,6 +51,7 @@ export const caseData: CaseData = {
           clueId: 'debt',
           response: 'My... my debts? How did you... *sigh*. It\'s true. I owe a great deal of money. I saw the sapphire as my only way out. I took it. I was going to sell it to a collector and replace it with a fake later. The note was a diversion.',
           unlocksClueId: 'confession',
+          updatedStatement: 'I confess, I stole the sapphire. My gambling debts were overwhelming, and in a moment of sheer desperation, I saw the "Azure Star" as my only escape. I took it from the study while polishing silver nearby, planning to replace it with a replica after selling the original. The note was a pathetic attempt to throw you off my trail. I am ready to face the consequences of my foolish actions.'
         },
          {
           clueId: 'torn_fabric',

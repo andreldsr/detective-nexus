@@ -14,6 +14,7 @@ export const DialogueSchema = z.object({
   response: z.string(),
   unlocksClueId: z.string().optional(),
   unlocksCharacterId: z.string().optional(),
+  updatedStatement: z.string().optional(),
 });
 export type Dialogue = z.infer<typeof DialogueSchema>;
 

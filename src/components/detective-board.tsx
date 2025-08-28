@@ -58,6 +58,23 @@ export function DetectiveBoard({ caseId, initialCaseData, initialUnlockedClueIds
     const response = dialogue?.response ?? "They have nothing to say about that.";
     setDialogueResult({ characterName: character.name, response });
     setIsModalOpen(true);
+    
+    if (dialogue?.updatedStatement) {
+      const newStatement = dialogue.updatedStatement;
+      setCaseData(prevCaseData => {
+        const newCharacters = prevCaseData.characters.map(char => {
+          if (char.id === selectedCharacterId) {
+            return { ...char, statement: newStatement };
+          }
+          return char;
+        });
+        return { ...prevCaseData, characters: newCharacters };
+      });
+      toast({
+        title: `${character.name}'s story changed!`,
+        description: "Their official statement has been updated.",
+      });
+    }
 
     if (dialogue?.unlocksClueId) {
       const newClueId = dialogue.unlocksClueId;
