@@ -5,7 +5,12 @@ import { admin } from '@/lib/firebase-admin';
 
 export async function GET(_request: NextRequest) {
   try {
-    const sessionCookie = cookies().get('session')?.value;
+    const allCookies = cookies();
+    const cookieList = allCookies.getAll().map(c => c.name);
+    const sessionCookie = allCookies.get('session')?.value;
+    console.log('API /auth/me: Cookie names:', cookieList);
+    console.log('API /auth/me: session cookie present?', !!sessionCookie);
+
     if (!sessionCookie) {
       return NextResponse.json({ user: null }, { status: 200 });
     }
